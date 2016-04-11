@@ -60,4 +60,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#.idea folder due to PyCharm structure
 .idea/
