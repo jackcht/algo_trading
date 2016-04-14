@@ -8,6 +8,12 @@
 import numpy as np
 
 
+#import pandas as pd
+#import statsmodels
+#from statsmodels.tsa.stattools import coint
+#np.random.seed(107)
+#import matplotlib.pyplot as plt
+
 def initialize(context):
     context.stock1 = symbol('ABGB')
     context.stock2 = symbol('FSLR')
