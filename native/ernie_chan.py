@@ -14,8 +14,20 @@ from zipline.utils import tradingcalendar
 
 def initialize(context):
     # Quantopian backtester specific variables
+
+    # When using the FixedSlippage model, the size of your order does not
+    # affect the price of your trade execution. You specify a 'spread' that
+    # you think is a typical bid/ask spread to use. When you place a buy
+    # order, half of the spread is added to the price; when you place a sell
+    # order, half of the spread is subtracted from the price.
     set_slippage(slippage.FixedSlippage(spread=0))
+
+    # If you don't specify a commission, your backtest defaults to $0.03 per share.
+    # You can define your trading cost in either dollars per share or dollars per trade.
     set_commission(commission.PerTrade(cost=1))
+
+    # If a ticker was reused by multiple companies, use set_symbol_lookup_date
+    # ('YYYY-MM-DD') to specify what date to use when resolving conflicts.
     set_symbol_lookup_date('2014-01-01')
     context.Y = symbol('ABGB')
     context.X = symbol('FSLR')
@@ -52,12 +64,14 @@ def handle_data(context, data):
         leverage=_leverage
     )
 
+    # if get_open_orders() is not empty (which translates to True), then wait until finish all the open orders
     if get_open_orders():
         return
 
     now = get_datetime()
     exchange_time = now.astimezone(pytz.timezone('US/Eastern'))
 
+    # only run at this specific time (each day)
     if not (exchange_time.hour == 15 and exchange_time.minute == 30):
         return
 
