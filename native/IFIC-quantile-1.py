@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 #import tushare as ts
 import pandas as pd
 import statsmodels.tsa.stattools as sts
+
 #from scipy.stats.stats import pearsonr
 
 entry_bound_level1 = [-1.8, 1.8]
@@ -31,18 +32,21 @@ df_combine = df_IC.join(df_IF).dropna()
 df_combine.columns = ['IC_close', 'IF_close']
 
 model = pd.ols(y=df_combine['IF_close'], x=df_combine['IC_close'], intercept=True)
-print 'beta: ',model.beta['x']                      # print result: 'beta:  0.186247962277'
+print 'beta: ', model.beta['x']  # print result: 'beta:  0.186247962277'
 
 beta_ary = []
 
-print len(df_combine)                               # print result: 5642
+print len(df_combine)  # print result: 5642
 for iirr in range(len(df_combine)):
     beta_ary.append(model.beta['x'])
+
+# what is beta_ary ?
+print beta_ary
 
 AA = df_combine['IF_close'][:]
 BB = df_combine['IC_close'][:].values * pd.Series(beta_ary)
 
-spread_value =  BB*0.66 - AA.values
+spread_value = BB * 0.66 - AA.values
 spread = pd.DataFrame(spread_value.values, df_combine[:].index).dropna()
 spread.columns = ['spread']
 spread.plot()
@@ -71,12 +75,12 @@ upper_exit_sp = pd.rolling_quantile(spread, rolling_minutes, quantile_exit_bound
 # replace the below with 'DataFrame.rolling(window=100,center=False).quantile(quantile=0.4)'
 lower_exit_sp = pd.rolling_quantile(spread, rolling_minutes, quantile_exit_bound[0]).dropna().values
 
-assert(len(mean_sp) == len(std_sp))
-spread = spread[rolling_minutes-1:]
+assert (len(mean_sp) == len(std_sp))
+spread = spread[rolling_minutes - 1:]
 print len(spread)               # result: 5543
 print len(mean_sp)              # result: 5543
-assert(len(mean_sp) == len(spread))
-assert(len(upper_sp) == len(spread))
+assert (len(mean_sp) == len(spread))
+assert (len(upper_sp) == len(spread))
 
 time_index = spread.index
 
@@ -85,7 +89,12 @@ sum_profit = 0.0
 hold_flag = False
 spread_last_entrance = 0.0
 
-last_status = 0 # 1 for above upper bound, 2 for below upper bound; above upper exit bound, 3 for below upper exit bound and above lower bound, 4 for below lower exit bound and above lower bound, 5 for below lower bound
+last_status = 0
+# 1 for above upper bound,
+# 2 for below upper bound and above upper exit bound,
+# 3 for below upper exit bound and above lower bound,
+# 4 for below lower exit bound and above lower bound,
+# 5 for below lower bound
 
 last_spread = 0.0
 
@@ -100,14 +109,14 @@ for index, row in spread.iterrows():
             last_status = 2
         elif row_val > lower_exit_sp[iiii]:
             last_status = 3
-        elif row_val> lower_sp[iiii]:
+        elif row_val > lower_sp[iiii]:
             last_status = 4
         else:
             last_status = 5
         iiii += 1
         profit.append(sum_profit)
         continue
-    
+
     append_flag = False
 
     row_val = row['spread']
@@ -118,7 +127,7 @@ for index, row in spread.iterrows():
         #doing nothing
         last_status = 1
     elif row_val > upper_exit_sp[iiii]:
-        if last_status == 1 and hold_flag == False and std_sp.values[iiii]>10.0:
+        if last_status == 1 and hold_flag == False and std_sp.values[iiii] > 10.0:
             #open the position
             #short IF, long IC
             hold_flag = True
@@ -134,8 +143,8 @@ for index, row in spread.iterrows():
             sum_profit += (row_val - last_spread)
             hold_flag = False
         last_status = 3
-    elif row_val> lower_sp[iiii]:
-        if last_status == 5 and hold_flag == False and std_sp.values[iiii]>10.0:
+    elif row_val > lower_sp[iiii]:
+        if last_status == 5 and hold_flag == False and std_sp.values[iiii] > 10.0:
             #open the position
             #long IF, short IC
             hold_flag = True
@@ -144,7 +153,7 @@ for index, row in spread.iterrows():
     else:
         last_status = 5
 
-#print sum_profit
+    #print sum_profit
     profit.append(sum_profit)
     iiii += 1
 
@@ -152,4 +161,3 @@ profit_df = pd.DataFrame(profit, spread.index)
 profit_df.to_csv('profit_this.csv')
 profit_df.plot()
 plt.show()
-
