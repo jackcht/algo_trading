@@ -1,7 +1,5 @@
-''' LEarning code from the tutorial sessions of Quantopian '''
+''' Learning code from the tutorial sessions of Quantopian '''
 
-import pandas as pd
-import statsmodels.tsa.stattools as sts
 
 # Put any initialization logic here.  The context object will be passed to
 # the other methods in your algorithm.
