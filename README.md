@@ -15,15 +15,4 @@ IEOR E4733 Algorithmic Trading
 **Dataset** :
 
 * American Stock Market, European Stock Market, and Commodity Market
-* 
-
-https://www.quantopian.com/posts/how-to-build-a-pairs-trading-strategy-on-quantopian
-
-fetch csv in quantopian:
-
-https://www.quantopian.com/posts/could-i-use-my-own-data-source
-
-https://www.quantopian.com/help#sample-csv-1
-
-https://www.quantopian.com/posts/working-with-local-data-downloading-the-database
 
