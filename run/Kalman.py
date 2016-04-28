@@ -1,5 +1,7 @@
 """
-Pairs Trading with Kalman Filters
+Pairs Trading with Kalman Filters for Quantopian
+
+modified from 
 """
 
 import numpy as np
@@ -34,11 +36,6 @@ def initialize(context):
         schedule_function(trade,
                           time_rule=time_rules.market_open(minutes=minute))
 
-        # simple implementation of Stop loss
-        #context.stop_price_x = 0.0
-        #context.stop_price_y = 0.0
-        #context.stop_pct = 0.90
-
 
 def trade(context, data):
     if context.kf is None:
@@ -46,17 +43,6 @@ def trade(context, data):
         return
     if get_open_orders():
         return
-
-    # simple implementation of simple trailing stop            
-    #set_trailing_stop(context, data)
-    #x = context.X.asset
-    #y = context.Y.asset
-    #if data[x].price < context.stop_price_x:
-    #    order_target(context.X, 0)
-    #    context.stop_price_x = 0
-    #if data[y].price < context.stop_price_y:
-    #    order_target(context.Y, 0)
-    #    context.stop_price_y = 0
 
     prices = np.log(history(bar_count=1, frequency='1d', field='price'))
     context.X.update(prices)
@@ -96,8 +82,7 @@ def trade(context, data):
         order_target(context.X.asset, 0.0)
 
     if reference_pos:
-        # Do a PNL check to make sure a reversion at least covered trading costs
-        # This is mentioned in the Quantopian community discussion (by David Edwards)
+        # Do a PNL check to make sure a reversion at least covered trading cost (by David Edwards)
         # Due to parameter drift, trades often made to be exited before the original spread has become profitable. 
         pnl = get_pnl(context, data)
         if zscore > -0.75 and reference_pos > 0 and pnl > 10:
@@ -109,7 +94,7 @@ def trade(context, data):
             order_target(context.X.asset, 0.0)
 
     else:
-        # this zscore is an empirical value based on the discussion on the Quantopian Community threads
+        # this zscore is an empirical value
         if zscore > 2.0:
             # Place an order to adjust a position to a target percent of the current portfolio value      
             # Placing a negative target percent order will result in a short position equal to the negative target percent. 
