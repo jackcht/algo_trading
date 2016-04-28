@@ -1,3 +1,7 @@
+"""
+Pairs Trading with Kalman Filters
+"""
+
 import numpy as np
 import pytz
 import statsmodels.api as sm
