@@ -1,5 +1,7 @@
 """
 Pairs Trading with O-U process
+
+Modified from https://www.quantopian.com/posts/pair-trade-with-cointegration-and-mean-reversion-tests
 """
 
 import numpy as np
