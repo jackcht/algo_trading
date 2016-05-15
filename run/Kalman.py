@@ -1,7 +1,7 @@
 """
 Pairs Trading with Kalman Filters for Quantopian
 
-modified from 
+modified from https://www.quantopian.com/posts/quantopian-lecture-series-kalman-filters
 """
 
 import numpy as np
